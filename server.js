@@ -17,9 +17,9 @@ app.get("/api/health", (req, res) => {
 // 🧠 API Route
 app.post("/api/wealth-score", async (req, res) => {
   try {
-    const { income, savings, debts, insurance} = req.body;
+    // const { income, savings, debts, insurance} = req.body;
 
-    console.log(income, savings, debts, insurance);
+    // console.log(income, savings, debts, insurance);
 
     const prompt = `
 You are a financial advisor. Based on this user's details, calculate a Financial Health (Wealth) Score from 0–100 and give short advice.
