@@ -21,21 +21,21 @@ app.post("/api/wealth-score", async (req, res) => {
 
     // console.log(income, savings, debts, insurance);
 
-    const prompt = `
-You are a financial advisor. Based on this user's details, calculate a Financial Health (Wealth) Score from 0–100 and give short advice.
+//     const prompt = `
+// You are a financial advisor. Based on this user's details, calculate a Financial Health (Wealth) Score from 0–100 and give short advice.
 
-User Details:
-- Monthly Income: ${income}
-- Monthly Savings: ${savings}
-- Debts/Loans: ${debts}
-- Health/Term Insurance: ${insurance}
+// User Details:
+// - Monthly Income: ${income}
+// - Monthly Savings: ${savings}
+// - Debts/Loans: ${debts}
+// - Health/Term Insurance: ${insurance}
 
-Return JSON only in this format:
-{
-  "wealth_score": number,
-  "summary": "short financial advice"
-}
-`;
+// Return JSON only in this format:
+// {
+//   "wealth_score": number,
+//   "summary": "short financial advice"
+// }
+// `;
 
     // const response = await fetch("https://api.openai.com/v1/chat/completions", {
     //   method: "POST",
