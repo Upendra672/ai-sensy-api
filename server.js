@@ -16,7 +16,7 @@ if (!OPENAI_API_KEY) {
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 
 // simple request logger
 app.use((req, _res, next) => {
@@ -103,7 +103,7 @@ app.post("/api/wealth-score", async (req, res, next) => {
 
     // // Success — return the parsed object directly (not wrapped)
     // console.log("[response]", result);
-    return res.json(req);
+    return res.json(req.body);
   } catch (err) {
     next(err);
   }
