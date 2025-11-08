@@ -20,7 +20,7 @@ app.use(express.json());
 
 // simple request logger
 app.use((req, _res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${JSON.stringify(req.body)}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${JSON.parse(req.body?.data)} ${json.parse(req.body)}`);
   next();
 });
 
