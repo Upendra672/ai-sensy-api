@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // simple request logger
 app.use((req, _res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${req.body ? JSON.stringify(req.body) : ""}`);
   next();
 });
 
