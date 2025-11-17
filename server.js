@@ -36,6 +36,15 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// create a mock api which return same response as below post api is returning
+app.get("/api/check-wealth-score", (req, res) => {
+  res.json({
+    wealthScore: 75,
+    description: "You have a solid financial foundation with good savings and investment habits. Keep up the great work and consider seeking expert advice to further enhance your financial planning.",
+    badgeEarned: "Wealth Builder 💼"
+  });
+});
+
 // POST /api/wealth-score
 app.post("/api/wealth-score", async (req, res, next) => {
   try {
