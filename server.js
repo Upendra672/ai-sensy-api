@@ -52,7 +52,7 @@ app.post("/api/wealth-score", async (req, res, next) => {
     // const prompt = `You are a financial scoring engine.\nEvaluate the user's financial habits using the 5 questions below. Each question includes (1) the question text and (2) the user’s selected answer.\n\n-------------------------------\nQUESTIONS + USER ANSWERS\n-------------------------------\nQ1 – Investments\n"Do you currently invest in Mutual Funds or SIPs?"\nUser Answer: ${body.investment}\n\nQ2 – Savings Ratio\n"How much of your monthly income do you save/invest?"\nUser Answer: ${body.savings}\n\nQ3 – Protection\n"Do you have insurance for yourself & family?"\nUser Answer: ${body.insuranceProtection}\n\nQ4 – Long-Term Confidence\n"How confident are you about retirement or long-term goals?"\nUser Answer: ${body.longTermConfidence}\n\nQ5 – Guidance Preference\n"Would you like expert help to plan your next financial milestone?"\nUser Answer: ${body.guidancePreference}\n\n-------------------------------\nSCORING LOGIC\n-------------------------------\nAssign a score from 0–100 based on strength of answers.\nStrong answer = 18–22 points\nMedium answer = 10–14 points\nWeak answer = 0–8 points\nEnsure final score stays between 0 and 100.\n\n-------------------------------\nBADGE LEVELS\n-------------------------------\n0–30  → \"Starter Sparrow 🐣\"\n31–50 → \"Growing Saver 🌱\"\n51–70 → \"Smart Saver 🏅\"\n71–85 → \"Wealth Builder 💼\"\n86–100 → \"Financial Pro ⭐\"\n\n-------------------------------\nOUTPUT FORMAT\n-------------------------------\nReturn ONLY pure JSON with exactly these 3 keys:\n{\n  \"wealthScore\": number,\n  \"description\": \"short 2–3 sentences about their financial situation\",\n  \"badgeEarned\": \"one of the five badges\"\n}\n`;
 
     const prompt = `
-Evaluate the user's financial habits and return a score (0–100), description (2–3 sentences), and badge.
+Evaluate the user's financial habits and return a score (0–100), description (1 sentences), and badge.
 
 User Answers:
 1. Investment: ${body.investment}
@@ -60,6 +60,9 @@ User Answers:
 3. Insurance: ${body.insuranceProtection}
 4. Confidence: ${body.longTermConfidence}
 5. Guidance: ${body.guidancePreference}
+
+The output (description + badgeEarned) MUST be written in this language: ${body.language || "english"}.
+Do NOT mix any other language. Only use: ${body.language || "english"}.
 
 Return JSON only:
 {
@@ -80,6 +83,24 @@ Return JSON only:
     const result = response.output_text;
 
     const parsedResult = JSON.parse(result);
+
+    return res.json(parsedResult);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Centralized error handler
+app.use((err, _req, res, _next) => {
+  console.error("[error]", err && err.stack ? err.stack : err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
+// Start server
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+
+
 
 
     // console.log("[openai] response", { response: JSON.stringify(response) });
@@ -119,18 +140,3 @@ Return JSON only:
     //   if (process.env.NODE_ENV !== "production") payload.raw = rawContent;
     //   return res.status(502).json(payload);
     // }
-
-    return res.json(parsedResult);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// Centralized error handler
-app.use((err, _req, res, _next) => {
-  console.error("[error]", err && err.stack ? err.stack : err);
-  res.status(500).json({ error: "Internal server error" });
-});
-
-// Start server
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
