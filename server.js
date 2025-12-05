@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import { getLevelData, scoreFutureVision, scoreHealthDefence, scoreMoneyAwareness, scoreProtectionShield, scoreSurvivalPower } from "./utils/helper.function.js";
 
 // Load environment variables early
 dotenv.config();
@@ -36,14 +37,47 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// create a mock api which return same response as below post api is returning
-app.get("/api/check-wealth-score", (req, res) => {
-  res.json({
-    wealthScore: 75,
-    description: "You have a solid financial foundation with good savings and investment habits. Keep up the great work and consider seeking expert advice to further enhance your financial planning.",
-    badgeEarned: "Wealth Builder 💼"
-  });
+
+app.post("/api/wealth-score-2", (req, res) => {
+  try {
+    const {
+      survivalPower,
+      moneyAwarness,   // note spelling from your AiSensy attribute
+      protectionShield,
+      HealthDefence,
+      futureVision
+    } = req.body;
+
+    // Calculate individual scores
+    const s1 = scoreSurvivalPower(survivalPower);
+    const s2 = scoreMoneyAwareness(moneyAwarness);
+    const s3 = scoreProtectionShield(protectionShield);
+    const s4 = scoreHealthDefence(HealthDefence);
+    const s5 = scoreFutureVision(futureVision);
+
+    const totalScore = s1 + s2 + s3 + s4 + s5;
+
+    const levelData = getLevelData(totalScore);
+
+    const message = `Your Wealth Score: ${totalScore}/100\n\nLevel: ${levelData.name}\n\n${levelData.description}`;
+
+    return res.json({
+      success: true,
+      wealthScore: totalScore,
+      badgeEarned: levelData.name,
+      description: levelData.description,
+      message, // ready to send to user in AiSensy
+    
+    });
+  } catch (err) {
+    console.error("Error calculating wealth score:", err);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error while calculating wealth score"
+    });
+  }
 });
+
 
 // POST /api/wealth-score
 app.post("/api/wealth-score", async (req, res, next) => {
@@ -98,45 +132,3 @@ app.use((err, _req, res, _next) => {
 
 // Start server
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
-
-
-
-
-
-    // console.log("[openai] response", { response: JSON.stringify(response) });
-    // Validate response shape
-    // const choice = response && response.choices && response.choices[0];
-    // const rawContent = choice && choice.message && choice.message.content;
-    // if (!rawContent) {
-    //   console.error("[openai] invalid response", { response });
-    //   return res
-    //     .status(502)
-    //     .json({ error: "Invalid response from language model" });
-    // }
-
-    // // Parse model output safely
-    // let result;
-    // try {
-    //   result = JSON.parse(rawContent);
-    // } catch (parseErr) {
-    //   // In non-production include raw content to help debugging
-    //   const payload = { error: "Failed to parse model response as JSON" };
-    //   if (process.env.NODE_ENV !== "production") payload.raw = rawContent;
-    //   console.error("[parse] failed to parse model output", parseErr);
-    //   return res.status(502).json(payload);
-    // }
-
-    // // Ensure result has exactly the expected keys
-    // const expected = ["wealthScore", "description", "badgeEarned"];
-    // const keys = Object.keys(result || {});
-    // const missing = expected.filter((k) => !keys.includes(k));
-    // const extra = keys.filter((k) => !expected.includes(k));
-    // if (missing.length || extra.length) {
-    //   const payload = {
-    //     error: "Model returned unexpected schema",
-    //     missing,
-    //     extra,
-    //   };
-    //   if (process.env.NODE_ENV !== "production") payload.raw = rawContent;
-    //   return res.status(502).json(payload);
-    // }
