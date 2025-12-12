@@ -41,6 +41,7 @@ app.get("/api/health", (req, res) => {
 app.post("/api/wealth-score-2", (req, res) => {
   try {
     const {
+      language,
       survivalPower,
       moneyAwarness,   // note spelling from your AiSensy attribute
       protectionShield,
@@ -57,7 +58,7 @@ app.post("/api/wealth-score-2", (req, res) => {
 
     const totalScore = s1 + s2 + s3 + s4 + s5;
 
-    const levelData = getLevelData(totalScore);
+    const levelData = getLevelData(totalScore, language);
 
     const message = `Your Wealth Score: ${totalScore}/100\n\nLevel: ${levelData.name}\n\n${levelData.description}`;
 
